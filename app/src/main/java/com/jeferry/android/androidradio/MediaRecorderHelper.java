@@ -39,17 +39,21 @@ public class MediaRecorderHelper {
     public void init() throws IOException {
         // 设置音频来源(一般为麦克风)
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        // 设置单声道
+        mediaRecorder.setAudioChannels(1);
         // 设置音频输出格式（默认的输出格式）
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        // 设置比特率
+        mediaRecorder.setAudioEncodingBitRate(16_000);
         // 设置音频编码方式（默认的编码方式）
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC_ELD);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC);
         // 创建一个临时的音频输出文件.record_是文件的前缀名 .amr是后缀名
-//        audioFile = File.createTempFile("record_qqq", ".aac", Environment.getExternalStorageDirectory());
-        audioFile = new File(Environment.getExternalStorageDirectory()+File.separator+"record_qqq"+System.currentTimeMillis()+".aac");
-        if (!audioFile.exists()){
-            audioFile.getParentFile().mkdirs();
-        }
-        audioFile.createNewFile();
+        audioFile = File.createTempFile("record_qqq", ".aac", Environment.getExternalStorageDirectory());
+//        audioFile = new File(Environment.getExternalStorageDirectory()+File.separator+"record_qqq"+System.currentTimeMillis()+".aac");
+//        if (!audioFile.exists()){
+//            audioFile.getParentFile().mkdirs();
+//        }
+//        audioFile.createNewFile();
         // audioFile =new
         // File(Environment.getExternalStorageDirectory().getCanonicalPath()+"/sound.amr");
         // 设置录制器的文件保留路径
