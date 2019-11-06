@@ -42,14 +42,14 @@ public class MediaRecorderHelper {
         // 设置单声道
         mediaRecorder.setAudioChannels(1);
         // 设置音频输出格式（默认的输出格式）
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
         // 设置比特率
 //        mediaRecorder.setAudioEncodingBitRate(16_000);
         mediaRecorder.setAudioSamplingRate(44100);
         // 设置音频编码方式（默认的编码方式）
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
         // 创建一个临时的音频输出文件.record_是文件的前缀名 .amr是后缀名
-        audioFile = File.createTempFile("record_qqq", ".aac", Environment.getExternalStorageDirectory());
+        audioFile = File.createTempFile("record_qqq", ".amr", Environment.getExternalStorageDirectory());
 //        audioFile = new File(Environment.getExternalStorageDirectory()+File.separator+"record_qqq"+System.currentTimeMillis()+".aac");
 //        if (!audioFile.exists()){
 //            audioFile.getParentFile().mkdirs();
@@ -59,6 +59,12 @@ public class MediaRecorderHelper {
         // 设置录制器的文件保留路径
         mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
         mediaRecorder.prepare();
+        mediaRecorder.setOnInfoListener((mediaRecorder, i, i1) -> {
+
+        });
+        mediaRecorder.setOnErrorListener((mediaRecorder, i, i1) -> {
+
+        });
     }
 
     public void start() throws IllegalStateException {
