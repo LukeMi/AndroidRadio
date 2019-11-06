@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 stop();
                 break;
             case R.id.btn_upload:
+                startActivity(new Intent(this, AVActivity.class));
                 break;
             default:
                 break;
