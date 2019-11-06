@@ -6,9 +6,14 @@ import androidx.core.app.ActivityCompat;
 
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.view.View;
 import android.widget.TextView;
@@ -20,12 +25,20 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private long startMilliTime;
+
     private long endMilliTime;
 
     private MediaRecorderHelper mediaRecorderHelper;
+
     private TextView mTvStartTime;
+
     private TextView mTvEndTime;
+
     private TextView mTvDurationTime;
+
+    private boolean mBound;
+
+    private AudioCollectService mService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+//        unbindService(connection);
         super.onDestroy();
     }
 
@@ -49,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_start).setOnClickListener(this::onClick);
         findViewById(R.id.btn_stop).setOnClickListener(this::onClick);
         findViewById(R.id.btn_upload).setOnClickListener(this::onClick);
+        findViewById(R.id.btn_bind_service).setOnClickListener(this::onClick);
+        findViewById(R.id.btn_unbind_service).setOnClickListener(this::onClick);
         mTvStartTime = findViewById(R.id.tv_start_time);
         mTvEndTime = findViewById(R.id.tv_end_time);
         mTvDurationTime = findViewById(R.id.tv_duration_time);
@@ -64,10 +80,29 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.btn_upload:
                 break;
+            case R.id.btn_bind_service:
+                bindService(new Intent(this, AudioCollectService.class), connection, Context.BIND_AUTO_CREATE);
+                break;
+            case R.id.btn_unbind_service:
+                unbindService(connection);
+                break;
             default:
                 break;
         }
     }
+
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     private void checkPermission() {
         String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -93,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
         if (needRationale) {
 
         }
-
         ActivityCompat.requestPermissions(this, permissions, 1000);
     }
 
@@ -119,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                 mediaRecorderHelper = MediaRecorderHelper.getInstance();
                 mediaRecorderHelper.init();
                 mediaRecorderHelper.start();
-
                 new Handler(Looper.getMainLooper()).post(() -> {
                     startMilliTime = System.currentTimeMillis();
                     String s = countTime(startMilliTime);
