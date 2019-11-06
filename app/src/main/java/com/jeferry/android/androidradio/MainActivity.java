@@ -124,11 +124,14 @@ public class MainActivity extends AppCompatActivity {
         startMilliTime = System.currentTimeMillis();
         String s = countTime(startMilliTime);
         mTvStartTime.setText("开始时间" + s);
+        mTvEndTime.setText("");
+        mTvDurationTime.setText("");
     }
 
     private void stop() {
         try {
             mediaRecorderHelper.stop();
+            mediaRecorderHelper.release();
         } catch (Exception e) {
         }
         endMilliTime = System.currentTimeMillis();
