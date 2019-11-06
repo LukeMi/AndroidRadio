@@ -8,6 +8,8 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.TextView;
 
@@ -117,26 +119,31 @@ public class MainActivity extends AppCompatActivity {
                 mediaRecorderHelper = MediaRecorderHelper.getInstance();
                 mediaRecorderHelper.init();
                 mediaRecorderHelper.start();
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    startMilliTime = System.currentTimeMillis();
+                    String s = countTime(startMilliTime);
+                    mTvStartTime.setText("开始时间" + s);
+                    mTvEndTime.setText("");
+                    mTvDurationTime.setText("");
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
-        startMilliTime = System.currentTimeMillis();
-        String s = countTime(startMilliTime);
-        mTvStartTime.setText("开始时间" + s);
-        mTvEndTime.setText("");
-        mTvDurationTime.setText("");
     }
 
     private void stop() {
         try {
+            mediaRecorderHelper.reset();
             mediaRecorderHelper.stop();
-            mediaRecorderHelper.release();
         } catch (Exception e) {
+            e.printStackTrace();
         }
         endMilliTime = System.currentTimeMillis();
         String s = countTime(endMilliTime);
+        long seconds = (endMilliTime - startMilliTime) / 1000;
         mTvEndTime.setText("结束时间" + s);
-        mTvDurationTime.setText("持续时长" + (endMilliTime - startMilliTime) / 1000 / 60 + "m");
+        mTvDurationTime.setText("持续时长" + seconds / 60 + "m" + " ； = " + seconds + " s");
     }
 }

@@ -37,6 +37,7 @@ public class MediaRecorderHelper {
     }
 
     public void init() throws IOException {
+        mediaRecorder.reset();
         // 设置音频来源(一般为麦克风)
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         // 设置单声道
@@ -45,6 +46,7 @@ public class MediaRecorderHelper {
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
         // 设置比特率
 //        mediaRecorder.setAudioEncodingBitRate(16_000);
+        // 设置采样率
         mediaRecorder.setAudioSamplingRate(44100);
         // 设置音频编码方式（默认的编码方式）
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -68,6 +70,12 @@ public class MediaRecorderHelper {
     public void stop() throws IllegalStateException {
         if (mediaRecorder != null) {
             mediaRecorder.stop();
+        }
+    }
+
+    public void reset() throws IllegalStateException {
+        if (mediaRecorder != null) {
+            mediaRecorder.reset();
         }
     }
 
