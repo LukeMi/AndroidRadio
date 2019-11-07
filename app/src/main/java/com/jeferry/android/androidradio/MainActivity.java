@@ -40,11 +40,14 @@ public class MainActivity extends AppCompatActivity {
 
     private AudioCollectService mService;
 
+    private AudioCollectServiceManager audioCollectServiceManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        audioCollectServiceManager = AudioCollectServiceManager.getInstance(this.getApplicationContext());
     }
 
     @Override
@@ -81,28 +84,16 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btn_upload:
                 break;
             case R.id.btn_bind_service:
-                bindService(new Intent(this, AudioCollectService.class), connection, Context.BIND_AUTO_CREATE);
+                audioCollectServiceManager.bind();
                 break;
             case R.id.btn_unbind_service:
-                unbindService(connection);
+                audioCollectServiceManager.unBind();
                 break;
             default:
                 break;
         }
     }
 
-    private ServiceConnection connection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
 
     private void checkPermission() {
         String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
