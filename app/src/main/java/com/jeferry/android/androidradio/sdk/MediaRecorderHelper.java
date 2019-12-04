@@ -1,4 +1,4 @@
-package com.jeferry.android.androidradio;
+package com.jeferry.android.androidradio.sdk;
 
 import android.media.MediaRecorder;
 import android.os.Environment;
