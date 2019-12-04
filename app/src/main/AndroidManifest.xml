@@ -22,6 +22,9 @@
             </intent-filter>
         </activity>
         <service android:name=".AudioCollectService" />
+
+        <activity android:name=".AVActivity" />
+
     </application>
 
 </manifest>
