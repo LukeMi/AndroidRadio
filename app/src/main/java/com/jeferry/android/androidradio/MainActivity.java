@@ -47,6 +47,32 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
         audioCollectServiceManager = AudioCollectServiceManager.getInstance(this.getApplicationContext());
+        audioCollectServiceManager.setOnRecordListener(new MediaRecorderHelper.OnRecordListener() {
+            @Override
+            public void onInitRecordError() {
+
+            }
+
+            @Override
+            public void onStartRecordError() {
+
+            }
+
+            @Override
+            public void onRecordError() {
+
+            }
+
+            @Override
+            public void onStartRecord() {
+
+            }
+
+            @Override
+            public void onStopRecord() {
+
+            }
+        });
     }
 
     @Override
@@ -84,10 +110,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        findViewById(R.id.btn_bind_service).setOnClickListener(this::onClick);
         findViewById(R.id.btn_start).setOnClickListener(this::onClick);
         findViewById(R.id.btn_stop).setOnClickListener(this::onClick);
-        findViewById(R.id.btn_upload).setOnClickListener(this::onClick);
-        findViewById(R.id.btn_bind_service).setOnClickListener(this::onClick);
         findViewById(R.id.btn_unbind_service).setOnClickListener(this::onClick);
         mTvStartTime = findViewById(R.id.tv_start_time);
         mTvEndTime = findViewById(R.id.tv_end_time);
@@ -96,20 +121,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_start:
-                checkPermission();
-                break;
-            case R.id.btn_stop:
-                stop();
-                break;
-            case R.id.btn_upload:
-                break;
             case R.id.btn_bind_service:
                 audioCollectServiceManager.bind();
                 break;
             case R.id.btn_unbind_service:
                 audioCollectServiceManager.unBind();
                 break;
+            case R.id.btn_start:
+                audioCollectServiceManager.startRecord();
+                break;
+            case R.id.btn_stop:
+                audioCollectServiceManager.stopRecord();
+                break;
+
             default:
                 break;
         }

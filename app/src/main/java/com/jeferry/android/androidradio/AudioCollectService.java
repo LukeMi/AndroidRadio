@@ -48,6 +48,7 @@ public class AudioCollectService extends Service {
      */
     private MediaRecorderHelper mediaRecorderHelper;
     private Disposable subscribe;
+    private MediaRecorderHelper.OnRecordListener mOnRecordListener;
 
     @Override
     public void onCreate() {
@@ -60,6 +61,11 @@ public class AudioCollectService extends Service {
         Log.d(TAG, "onBind()");
         startService();
         return binder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
     }
 
     private void startService() {
@@ -116,6 +122,7 @@ public class AudioCollectService extends Service {
         new Thread(() -> {
             try {
                 mediaRecorderHelper = MediaRecorderHelper.getInstance();
+                mediaRecorderHelper.setOnRecordListener(mOnRecordListener);
                 mediaRecorderHelper.init();
                 mediaRecorderHelper.start();
             } catch (Exception e) {
@@ -199,9 +206,13 @@ public class AudioCollectService extends Service {
     }
 
     public void interval() {
-        subscribe = Observable.interval(INTERVAL_TIME_SECOND_UNIT, TimeUnit.SECONDS)
+        subscribe = Observable.interval(INTERVAL_TIME_SECOND_UNIT, TimeUnit.MINUTES)
                 .subscribe(aLong -> {
                     releaseRecording();
                 });
+    }
+
+    public void setOnRecordListener(MediaRecorderHelper.OnRecordListener listener){
+        mOnRecordListener = listener;
     }
 }

@@ -20,6 +20,8 @@ public class MediaRecorderHelper {
 
     private File audioFile;
 
+    private OnRecordListener mOnRecordListener;
+
     private MediaRecorderHelper() {
         mediaRecorder = new MediaRecorder();
     }
@@ -30,7 +32,9 @@ public class MediaRecorderHelper {
         }
         if (mediaRecorderHelper == null) {
             synchronized (MediaRecorderHelper.class) {
-                mediaRecorderHelper = new MediaRecorderHelper();
+                if (mediaRecorderHelper == null) {
+                    mediaRecorderHelper = new MediaRecorderHelper();
+                }
             }
         }
         return mediaRecorderHelper;
@@ -41,17 +45,17 @@ public class MediaRecorderHelper {
         // 设置音频来源(一般为麦克风)
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         // 设置单声道
-        mediaRecorder.setAudioChannels(1);
+        mediaRecorder.setAudioChannels(2);
         // 设置音频输出格式（默认的输出格式）
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
         // 设置比特率
 //        mediaRecorder.setAudioEncodingBitRate(16_000);
         // 设置采样率
         mediaRecorder.setAudioSamplingRate(44100);
         // 设置音频编码方式（默认的编码方式）
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         // 创建一个临时的音频输出文件.record_是文件的前缀名 .amr是后缀名
-        audioFile = File.createTempFile("record_qqq", ".amr", Environment.getExternalStorageDirectory());
+        audioFile = File.createTempFile("record_qqq", ".aac", Environment.getExternalStorageDirectory());
 //        audioFile = new File(Environment.getExternalStorageDirectory()+File.separator+"record_qqq"+System.currentTimeMillis()+".aac");
 //        if (!audioFile.exists()){
 //            audioFile.getParentFile().mkdirs();
@@ -65,17 +69,25 @@ public class MediaRecorderHelper {
 
         });
         mediaRecorder.setOnErrorListener((mediaRecorder, i, i1) -> {
-
+            if (mOnRecordListener != null) {
+                mOnRecordListener.onRecordError();
+            }
         });
     }
 
     public void start() throws IllegalStateException {
         mediaRecorder.start();
+        if (mOnRecordListener != null) {
+            mOnRecordListener.onStartRecord();
+        }
     }
 
     public void stop() throws IllegalStateException {
         if (mediaRecorder != null) {
             mediaRecorder.stop();
+            if (mOnRecordListener != null) {
+                mOnRecordListener.onStopRecord();
+            }
         }
     }
 
@@ -89,5 +101,37 @@ public class MediaRecorderHelper {
         if (mediaRecorder != null) {
             mediaRecorder.release();
         }
+    }
+
+    public void setOnRecordListener(OnRecordListener listener) {
+        mOnRecordListener = listener;
+    }
+
+    public interface OnRecordListener {
+
+        /**
+         * 初始化录音失败
+         */
+        void onInitRecordError();
+
+        /**
+         * 开始录音失败
+         */
+        void onStartRecordError();
+
+        /**
+         * 录音失败
+         */
+        void onRecordError();
+
+        /**
+         * 开始录音
+         */
+        void onStartRecord();
+
+        /**
+         * 停止录音
+         */
+        void onStopRecord();
     }
 }
