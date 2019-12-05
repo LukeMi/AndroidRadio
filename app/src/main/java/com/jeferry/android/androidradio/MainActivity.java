@@ -90,8 +90,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.audio:
+                startActivity(new Intent(this, AudioActivity.class));
+                break;
             case R.id.av:
                 startActivity(new Intent(this, AVActivity.class));
+                break;
+            case R.id.audioRecord:
+                startActivity(new Intent(this, AudioRecordActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

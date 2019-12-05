@@ -26,6 +26,8 @@ public class MediaRecorderHelper {
         mediaRecorder = new MediaRecorder();
     }
 
+    private String orderUuid;
+
     public static MediaRecorderHelper getInstance() {
         if (mediaRecorderHelper != null) {
             return mediaRecorderHelper;
