@@ -40,6 +40,8 @@ public class AudioCollectService extends Service {
      */
     private final int INTERVAL_TIME_SECOND_UNIT = 8 * 1;
 
+    private Disposable subscribe;
+
     // Binder given to clients
     private final AudioCollectBinder binder = new AudioCollectBinder();
 
@@ -47,7 +49,6 @@ public class AudioCollectService extends Service {
      * 全局管理类
      */
     private MediaRecorderHelper mediaRecorderHelper;
-    private Disposable subscribe;
     private MediaRecorderHelper.OnRecordListener mOnRecordListener;
 
     @Override

@@ -13,8 +13,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".tmp.AudioRecordService"
+            android:enabled="true"
+            android:exported="false"></service>
+
         <activity
-            android:name=".AudioRecordActivity"
+            android:name=".tmp.AudioRecordActivity"
             android:label="AudioRecordActivity" />
         <activity android:name=".AudioActivity" />
         <activity android:name=".MainActivity">

@@ -95,7 +95,6 @@ public class AudioRecordThread implements Runnable {
 
             if (length != bufferSize) {
                 if (onRecorderFailedListener != null) {
-                    Log.d(TAG, "length != BufferSize calling onRecordFailed");
                     onRecorderFailedListener.onRecorderFailed();
                 }
                 return false;
@@ -174,8 +173,8 @@ public class AudioRecordThread implements Runnable {
                 AudioFormat.ENCODING_PCM_16BIT, bufferSize * 10);
 
         if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
-            Log.d(TAG, "Unable to initialize AudioRecord");
-            throw new RuntimeException("Unable to initialize AudioRecord");
+            Log.d(TAG, "Unable to initialize AudioRecordService");
+            throw new RuntimeException("Unable to initialize AudioRecordService");
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

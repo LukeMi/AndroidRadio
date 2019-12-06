@@ -12,12 +12,13 @@ public class AudioRecording {
     private static final String TAG = "AudioRecording";
     private File file;
     private OnAudioRecordListener onAudioRecordListener;
-    private long mStartingTimeMillis = 0;
     private static final int IO_ERROR = 1;
     private static final int RECORDER_ERROR = 2;
     public static final int FILE_NULL = 3;
 
     private Thread mRecordingThread;
+
+    private long mStartingTimeMillis = 0;
 
     public AudioRecording() {
     }
@@ -31,13 +32,11 @@ public class AudioRecording {
         if (!file.exists()) {
             File parentFile = file.getParentFile();
             parentFile.mkdirs();
-            parentFile.createNewFile();
+            file.createNewFile();
         }
-
         this.file = file;
     }
 
-    // Call this method from Activity onStartButton Click to start recording
     public synchronized void startRecording() {
         if (file == null) {
             onAudioRecordListener.onError(FILE_NULL);
@@ -68,11 +67,14 @@ public class AudioRecording {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
-    // Call this method from Activity onStopButton Click to stop recording
-    public synchronized void stopRecording(Boolean cancel) {
+    /**
+     * 是否删除文件
+     *
+     * @param delete true - 删除文件
+     */
+    public synchronized void stopRecording(Boolean delete) {
 
         Log.d(TAG, "Recording stopped ");
 
@@ -86,12 +88,8 @@ public class AudioRecording {
                 onAudioRecordListener.onError(IO_ERROR);
                 return;
             }
-
-            // total recorded time
-            long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
-
-            if (!cancel) {
-                onAudioRecordListener.onRecordFinished();
+            if (!delete) {
+                onAudioRecordListener.onRecordFinished(file.getPath());
             } else {
                 deleteFile();
             }
@@ -119,7 +117,7 @@ public class AudioRecording {
 
     public interface OnAudioRecordListener {
 
-        void onRecordFinished();
+        void onRecordFinished(String filePath);
 
         void onError(int errorCode);
 

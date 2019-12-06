@@ -1,4 +1,4 @@
-package com.jeferry.android.androidradio;
+package com.jeferry.android.androidradio.tmp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,10 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.jeferry.android.androidradio.R;
+import com.jeferry.android.androidradio.tmp.AudioRecordManager;
 import com.jeferry.android.androidradio.tmp.AudioRecording;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AudioRecordActivity extends AppCompatActivity {
 
@@ -23,6 +27,7 @@ public class AudioRecordActivity extends AppCompatActivity {
     private TextView mTvDurationTime;
     private AudioRecording mAudioRecording;
     private long startTime;
+    private AudioRecordManager instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,25 +44,39 @@ public class AudioRecordActivity extends AppCompatActivity {
 
         mBtnStart.setOnClickListener(this::onClick);
         mBtnStop.setOnClickListener(this::onClick);
+
+        instance = AudioRecordManager.getInstance(getApplicationContext());
     }
 
     private void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_start:
-                startRecording();
+                startR();
+//                startRecording();
                 break;
             case R.id.btn_stop:
-                stopRecording();
+//                stopR();
                 break;
         }
     }
 
-    private void startRecording() {
+    private void startR() {
+        instance.setOrderUuid("osacomu");
+        instance.startRecord();
+    }
 
+    private void stopR() {
+        instance.stopRecord();
+
+    }
+     private void startRecording() {
+        mTvStartTime.setText("");
+        mTvEndTime.setText("");
+        mTvDurationTime.setText("");
         AudioRecording.OnAudioRecordListener onRecordListener = new AudioRecording.OnAudioRecordListener() {
 
             @Override
-            public void onRecordFinished() {
+            public void onRecordFinished(String filePath) {
                 Log.d("MAIN", "onFinish ");
             }
 
@@ -69,7 +88,6 @@ public class AudioRecordActivity extends AppCompatActivity {
             @Override
             public void onRecordingStarted() {
                 Log.d("MAIN", "onStart ");
-
             }
         };
 
@@ -80,21 +98,23 @@ public class AudioRecordActivity extends AppCompatActivity {
             mAudioRecording.setFile(filePath);
             mAudioRecording.startRecording();
             startTime = System.currentTimeMillis();
-            mTvStartTime.setText("开始时间： " + String.valueOf(startTime));
+            mTvStartTime.setText("开始时间： " + formatDate(startTime));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
+/*
     private void stopRecording() {
         if (mAudioRecording != null) {
             mAudioRecording.stopRecording(false);
             long l = System.currentTimeMillis();
-            mTvEndTime.setText("结束时间： " + String.valueOf(l));
+            mTvEndTime.setText("结束时间： " + formatDate(l));
             long duration = l - Long.valueOf(startTime);
             mTvDurationTime.setText("持续时间： " + format(duration));
         }
-    }
+    }*/
 
     private String format(long millsTime) {
         long seconds = millsTime / 1000;
@@ -102,5 +122,10 @@ public class AudioRecordActivity extends AppCompatActivity {
         long minutes = seconds % 3600 / 60;
         long leftSeconds = seconds % 3600 % 60;
         return hours + "h " + minutes + "m " + leftSeconds + "s";
+    }
+
+    private String formatDate(long mills) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(new Date(mills));
     }
 }
