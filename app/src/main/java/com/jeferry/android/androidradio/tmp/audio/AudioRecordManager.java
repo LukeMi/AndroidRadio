@@ -1,4 +1,4 @@
-package com.jeferry.android.androidradio.tmp;
+package com.jeferry.android.androidradio.tmp.audio;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,7 +10,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.jeferry.android.androidradio.AudioCollectService;
+import java.io.File;
 
 public class AudioRecordManager {
     public static final String TAG = AudioRecordManager.class.getSimpleName();
@@ -21,36 +21,6 @@ public class AudioRecordManager {
     private String orderUuid;
 
     private AudioRecordService mAudioRecordService;
-
-    private boolean mBound;
-
-    private ServiceConnection connection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d(TAG, "onServiceConnected " + className);
-            mBound = true;
-            if (service instanceof AudioRecordService) {
-                mAudioRecordService = (AudioRecordService) service;
-                mAudioRecordService.setOnAudioRecordListener(mOnRecordListener);
-                if (mAudioRecordService != null) {
-                    mAudioRecordService.startRecording();
-                }
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.d(TAG, "onServiceDisconnected " + arg0);
-            mBound = false;
-        }
-    };
-
-
-    private AudioRecordManager(Context context) {
-        this.context = context;
-
-    }
 
     private AudioRecording.OnAudioRecordListener mOnRecordListener = new AudioRecording.OnAudioRecordListener() {
         @Override
@@ -70,13 +40,57 @@ public class AudioRecordManager {
         }
     };
 
+
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d(AudioRecordService.TAG, "onServiceConnected " + className);
+
+            if (service instanceof AudioRecordService.MBinder) {
+                mAudioRecordService = ((AudioRecordService.MBinder) service).getService();
+                mAudioRecordService.setOnAudioRecordListener(mOnRecordListener);
+                if (mAudioRecordService != null) {
+                    Log.d(TAG, "mAudioRecordService != null");
+                    mAudioRecordService.startRecording();
+                }
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(AudioRecordService.TAG, "onServiceDisconnected " + arg0);
+        }
+    };
+
+
+    private AudioRecordManager(Context context) {
+        this.context = context;
+
+    }
+
+
     /**
      * 上传文件
      *
      * @param filePath 文件路径
      */
-    private void upLoad(String filePath) {
-        Toast.makeText(context.getApplicationContext(), "上传文件：" + filePath, Toast.LENGTH_SHORT).show();
+    private void upLoad(final String filePath) {
+        Toast.makeText(context.getApplicationContext(), "上传文件中：", Toast.LENGTH_SHORT).show();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            File file = new File(filePath);
+            if (file.exists()) {
+                try {
+//                    boolean delete = file.delete();
+//                    Toast.makeText(context.getApplicationContext(), delete ? "上传文件成功：" : "上传文件失败", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+
+                } finally {
+
+                }
+
+            }
+        }, 3000);
     }
 
     /**
@@ -104,13 +118,23 @@ public class AudioRecordManager {
         this.orderUuid = orderUuid;
     }
 
-    public void startRecord() {
+    public void bind() {
         Intent service = new Intent(context, AudioRecordService.class);
+        service.putExtra(AudioRecordService.EXTRA_ORDER_UUID, orderUuid);
         context.bindService(service, connection, Context.BIND_AUTO_CREATE);
+    }
 
+    public void startRecord() {
+        if (mAudioRecordService != null) {
+            mAudioRecordService.startRecording();
+        }
     }
 
     public void stopRecord() {
+
+    }
+
+    public void unBind() {
         context.unbindService(connection);
     }
 }

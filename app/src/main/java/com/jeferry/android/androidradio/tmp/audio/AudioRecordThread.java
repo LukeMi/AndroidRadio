@@ -1,4 +1,4 @@
-package com.jeferry.android.androidradio.tmp;
+package com.jeferry.android.androidradio.tmp.audio;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -20,6 +20,7 @@ public class AudioRecordThread implements Runnable {
     private static final int SAMPLE_RATE_INDEX = 8;
     private static final int CHANNELS = 1;
     private static final int BIT_RATE = 32000;
+    public static final int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 
     private final int bufferSize;
     private final MediaCodec mediaCodec;
@@ -31,7 +32,7 @@ public class AudioRecordThread implements Runnable {
 
     AudioRecordThread(OutputStream outputStream, OnRecorderFailedListener onRecorderFailedListener) throws IOException {
 
-        this.bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        this.bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, audioFormat);
         this.audioRecord = createAudioRecord(this.bufferSize);
         this.mediaCodec = createMediaCodec(this.bufferSize);
         this.outputStream = outputStream;
@@ -60,10 +61,10 @@ public class AudioRecordThread implements Runnable {
 
         try {
             while (!Thread.interrupted()) {
-
                 boolean success = handleCodecInput(audioRecord, mediaCodec, codecInputBuffers, Thread.currentThread().isAlive());
-                if (success)
+                if (success) {
                     handleCodecOutput(mediaCodec, codecOutputBuffers, bufferInfo, outputStream);
+                }
             }
         } catch (IOException e) {
             Log.w(TAG, e);
@@ -170,7 +171,7 @@ public class AudioRecordThread implements Runnable {
     private AudioRecord createAudioRecord(int bufferSize) {
         AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, bufferSize * 10);
+                audioFormat, bufferSize * 10);
 
         if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
             Log.d(TAG, "Unable to initialize AudioRecordService");

@@ -10,8 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.jeferry.android.androidradio.R;
-import com.jeferry.android.androidradio.tmp.AudioRecordManager;
-import com.jeferry.android.androidradio.tmp.AudioRecording;
+import com.jeferry.android.androidradio.tmp.audio.AudioRecordManager;
+import com.jeferry.android.androidradio.tmp.audio.AudioRecordService;
+import com.jeferry.android.androidradio.tmp.audio.AudioRecording;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,21 +56,24 @@ public class AudioRecordActivity extends AppCompatActivity {
 //                startRecording();
                 break;
             case R.id.btn_stop:
-//                stopR();
+//                stopRecording();
+                stopR();
                 break;
         }
     }
 
     private void startR() {
         instance.setOrderUuid("osacomu");
-        instance.startRecord();
+        instance.bind();
     }
 
     private void stopR() {
-        instance.stopRecord();
+        instance.unBind();
 
     }
-     private void startRecording() {
+
+    @Deprecated
+    private void startRecording() {
         mTvStartTime.setText("");
         mTvEndTime.setText("");
         mTvDurationTime.setText("");
@@ -77,17 +81,24 @@ public class AudioRecordActivity extends AppCompatActivity {
 
             @Override
             public void onRecordFinished(String filePath) {
-                Log.d("MAIN", "onFinish ");
+                File file = new File(filePath);
+                long totalSpace = 0;
+                if (file.exists()) {
+                    totalSpace = file.getTotalSpace();
+                    totalSpace = totalSpace / 8 / 1024;
+
+                }
+                Log.d(AudioRecordService.TAG, "onFinish " + filePath + " ;totalSpace : " + totalSpace);
             }
 
             @Override
             public void onError(int e) {
-                Log.d("MAIN", "onError " + e);
+                Log.d(AudioRecordService.TAG, "onError " + e);
             }
 
             @Override
             public void onRecordingStarted() {
-                Log.d("MAIN", "onStart ");
+                Log.d(AudioRecordService.TAG, "onStart ");
             }
         };
 
@@ -104,17 +115,16 @@ public class AudioRecordActivity extends AppCompatActivity {
         }
     }
 
-
-/*
+    @Deprecated
     private void stopRecording() {
         if (mAudioRecording != null) {
-            mAudioRecording.stopRecording(false);
+            mAudioRecording.stopRecording();
             long l = System.currentTimeMillis();
             mTvEndTime.setText("结束时间： " + formatDate(l));
             long duration = l - Long.valueOf(startTime);
             mTvDurationTime.setText("持续时间： " + format(duration));
         }
-    }*/
+    }
 
     private String format(long millsTime) {
         long seconds = millsTime / 1000;

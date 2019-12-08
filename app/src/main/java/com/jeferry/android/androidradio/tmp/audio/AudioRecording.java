@@ -1,4 +1,4 @@
-package com.jeferry.android.androidradio.tmp;
+package com.jeferry.android.androidradio.tmp.audio;
 
 import android.util.Log;
 
@@ -44,14 +44,12 @@ public class AudioRecording {
         }
         mStartingTimeMillis = System.currentTimeMillis();
         try {
-            if (mRecordingThread != null) stopRecording(true);
-
-
+            if (mRecordingThread != null) stopRecording();
             mRecordingThread = new Thread(new AudioRecordThread(outputStream(file), new AudioRecordThread.OnRecorderFailedListener() {
                 @Override
                 public void onRecorderFailed() {
                     onAudioRecordListener.onError(RECORDER_ERROR);
-                    stopRecording(true);
+                    stopRecording();
                 }
 
                 @Override
@@ -71,10 +69,8 @@ public class AudioRecording {
 
     /**
      * 是否删除文件
-     *
-     * @param delete true - 删除文件
      */
-    public synchronized void stopRecording(Boolean delete) {
+    public synchronized void stopRecording() {
 
         Log.d(TAG, "Recording stopped ");
 
@@ -88,11 +84,7 @@ public class AudioRecording {
                 onAudioRecordListener.onError(IO_ERROR);
                 return;
             }
-            if (!delete) {
-                onAudioRecordListener.onRecordFinished(file.getPath());
-            } else {
-                deleteFile();
-            }
+            onAudioRecordListener.onRecordFinished(file.getPath());
         }
     }
 

@@ -14,21 +14,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".tmp.AudioRecordService"
+            android:name=".tmp.audio.AudioRecordService"
             android:enabled="true"
             android:exported="false"></service>
 
         <activity
             android:name=".tmp.AudioRecordActivity"
-            android:label="AudioRecordActivity" />
-        <activity android:name=".AudioActivity" />
-        <activity android:name=".MainActivity">
+            android:label="AudioRecordActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".AudioActivity" />
+        <activity android:name=".MainActivity">
+
         </activity>
 
         <service android:name=".AudioCollectService" />

@@ -1,4 +1,4 @@
-package com.jeferry.android.androidradio.tmp;
+package com.jeferry.android.androidradio.tmp.audio;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -19,14 +18,15 @@ import com.jeferry.android.androidradio.R;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Filter;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-
-import static com.jeferry.android.androidradio.tmp.AudioRecordManager.TAG;
+import io.reactivex.schedulers.Schedulers;
 
 public class AudioRecordService extends Service {
+
+    public static final String TAG = AudioRecordService.class.getSimpleName() + "....>>";
 
     public static final String EXTRA_ORDER_UUID = "extra_order_uuid";
 
@@ -36,7 +36,7 @@ public class AudioRecordService extends Service {
     /**
      * 间隔时间8分钟上传一次录音
      */
-    private final int INTERVAL_TIME_SECOND_UNIT = 8 * 1;
+    private final int INTERVAL_TIME_SECOND_UNIT = 3 * 1;
 
     private Disposable subscribe;
 
@@ -56,13 +56,16 @@ public class AudioRecordService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind");
         orderUuid = intent.getStringExtra(EXTRA_ORDER_UUID);
-        startService();
-        return new Binder();
+        mAudioRecording = new AudioRecording();
+        notification();
+        return new MBinder();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "onUnbind");
         if (subscribe != null) {
             subscribe.dispose();
         }
@@ -75,6 +78,8 @@ public class AudioRecordService extends Service {
             subscribe.dispose();
         }
         subscribe = Observable.interval(INTERVAL_TIME_SECOND_UNIT, TimeUnit.MINUTES)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                     reStartRecord();
                 });
@@ -85,7 +90,7 @@ public class AudioRecordService extends Service {
         startRecording();
     }
 
-    private void startService() {
+    private void notification() {
         Notification.Builder builder = new Notification.Builder(this.getApplicationContext()); //获取一个Notification构造器
         Intent nfIntent = new Intent(this, MainActivity.class);
         // 设置PendingIntent
@@ -107,8 +112,6 @@ public class AudioRecordService extends Service {
         Notification notification = builder.build(); // 获取构建好的Notification
         notification.defaults = Notification.DEFAULT_SOUND; //设置为默认的声音
         startForeground(1110, notification);
-
-
     }
 
     public void setOnAudioRecordListener(AudioRecording.OnAudioRecordListener onAudioRecordListener) {
@@ -116,7 +119,8 @@ public class AudioRecordService extends Service {
     }
 
     public void startRecording() {
-//        String filePath = new File(Environment.getExternalStorageDirectory(), "Recorder") + "/" + System.currentTimeMillis() + ".aac";
+        Log.d(TAG, "startRecording");
+        stopRecording();
         String filePath = generatePath();
         Log.d(TAG, filePath);
         mAudioRecording.setOnAudioRecordListener(onAudioRecordListener);
@@ -127,7 +131,6 @@ public class AudioRecordService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private String generatePath() {
@@ -139,7 +142,14 @@ public class AudioRecordService extends Service {
 
     private void stopRecording() {
         if (mAudioRecording != null) {
-            mAudioRecording.stopRecording(false);
+            mAudioRecording.stopRecording();
         }
     }
+
+    public class MBinder extends Binder {
+        public AudioRecordService getService() {
+            return AudioRecordService.this;
+        }
+    }
+
 }
