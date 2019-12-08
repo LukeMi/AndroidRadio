@@ -7,7 +7,8 @@ import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.util.Log;
+
+import com.socks.library.KLog;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,7 +44,7 @@ public class AudioRecordThread implements Runnable {
         try {
             audioRecord.startRecording();
         } catch (Exception e) {
-            Log.w(TAG, e);
+            KLog.w(TAG, e);
             mediaCodec.release();
             throw new IOException(e);
         }
@@ -52,7 +53,7 @@ public class AudioRecordThread implements Runnable {
     @Override
     public void run() {
         if (onRecorderFailedListener != null) {
-            Log.d(TAG, "onRecorderStarted");
+            KLog.d(TAG, "onRecorderStarted");
             onRecorderFailedListener.onRecorderStarted();
         }
         MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
@@ -67,7 +68,7 @@ public class AudioRecordThread implements Runnable {
                 }
             }
         } catch (IOException e) {
-            Log.w(TAG, e);
+            KLog.w(TAG, e);
         } finally {
             mediaCodec.stop();
             audioRecord.stop();
@@ -174,7 +175,7 @@ public class AudioRecordThread implements Runnable {
                 audioFormat, bufferSize * 10);
 
         if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
-            Log.d(TAG, "Unable to initialize AudioRecordService");
+            KLog.d(TAG, "Unable to initialize AudioRecordService");
             throw new RuntimeException("Unable to initialize AudioRecordService");
         }
 
@@ -217,7 +218,7 @@ public class AudioRecordThread implements Runnable {
         try {
             mediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (Exception e) {
-            Log.w(TAG, e);
+            KLog.w(TAG, e);
             mediaCodec.release();
             throw new IOException(e);
         }

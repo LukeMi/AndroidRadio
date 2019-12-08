@@ -7,8 +7,9 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.socks.library.KLog;
 
 import java.io.File;
 
@@ -26,17 +27,17 @@ public class AudioRecordManager {
         @Override
         public void onRecordFinished(String filePath) {
             upLoad(filePath);
-            Log.d(TAG, "onRecordFinished");
+            KLog.d(TAG, "onRecordFinished");
         }
 
         @Override
         public void onError(int errorCode) {
-            Log.d(TAG, "onError");
+            KLog.d(TAG, "onError");
         }
 
         @Override
         public void onRecordingStarted() {
-            Log.d(TAG, "onRecordingStarted");
+            KLog.d(TAG, "onRecordingStarted");
         }
     };
 
@@ -45,13 +46,13 @@ public class AudioRecordManager {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d(AudioRecordService.TAG, "onServiceConnected " + className);
+            KLog.d(AudioRecordService.TAG, "onServiceConnected " + className);
 
             if (service instanceof AudioRecordService.MBinder) {
                 mAudioRecordService = ((AudioRecordService.MBinder) service).getService();
                 mAudioRecordService.setOnAudioRecordListener(mOnRecordListener);
                 if (mAudioRecordService != null) {
-                    Log.d(TAG, "mAudioRecordService != null");
+                    KLog.d(TAG, "mAudioRecordService != null");
                     mAudioRecordService.startRecording();
                 }
             }
@@ -59,7 +60,7 @@ public class AudioRecordManager {
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            Log.d(AudioRecordService.TAG, "onServiceDisconnected " + arg0);
+            KLog.d(AudioRecordService.TAG, "onServiceDisconnected " + arg0);
         }
     };
 

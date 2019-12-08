@@ -1,6 +1,6 @@
 package com.jeferry.android.androidradio.tmp.audio;
 
-import android.util.Log;
+import com.socks.library.KLog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,7 +72,7 @@ public class AudioRecording {
      */
     public synchronized void stopRecording() {
 
-        Log.d(TAG, "Recording stopped ");
+        KLog.d(TAG, "Recording stopped ");
 
         if (mRecordingThread != null) {
 
@@ -90,7 +90,7 @@ public class AudioRecording {
 
     private void deleteFile() {
         if (file != null && file.exists())
-            Log.d(TAG, String.format("deleting file success %b ", file.delete()));
+            KLog.d(TAG, String.format("deleting file success %b ", file.delete()));
     }
 
     private OutputStream outputStream(File file) {

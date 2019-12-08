@@ -10,10 +10,9 @@ import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
-import com.jeferry.android.androidradio.MainActivity;
 import com.jeferry.android.androidradio.R;
+import com.socks.library.KLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +55,7 @@ public class AudioRecordService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind");
+        KLog.d(TAG, "onBind");
         orderUuid = intent.getStringExtra(EXTRA_ORDER_UUID);
         mAudioRecording = new AudioRecording();
         notification();
@@ -65,7 +64,7 @@ public class AudioRecordService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "onUnbind");
+        KLog.d(TAG, "onUnbind");
         if (subscribe != null) {
             subscribe.dispose();
         }
@@ -92,9 +91,9 @@ public class AudioRecordService extends Service {
 
     private void notification() {
         Notification.Builder builder = new Notification.Builder(this.getApplicationContext()); //获取一个Notification构造器
-        Intent nfIntent = new Intent(this, MainActivity.class);
+//        Intent nfIntent = new Intent(this, MainActivity.class);
         // 设置PendingIntent
-        builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, 0))
+        builder.setContentIntent(PendingIntent.getActivity(this, 0, null, 0))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))// 设置下拉列表中的图标(大图标)
                 .setContentTitle("行程保护") // 设置下拉列表里的标题
                 .setSmallIcon(R.mipmap.ic_launcher) // 设置状态栏内的小图标
@@ -119,10 +118,10 @@ public class AudioRecordService extends Service {
     }
 
     public void startRecording() {
-        Log.d(TAG, "startRecording");
+        KLog.d(TAG, "startRecording");
         stopRecording();
         String filePath = generatePath();
-        Log.d(TAG, filePath);
+        KLog.d(TAG, filePath);
         mAudioRecording.setOnAudioRecordListener(onAudioRecordListener);
         try {
             mAudioRecording.setFile(filePath);
