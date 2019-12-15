@@ -47,6 +47,7 @@ public class AudioRecordActivity extends AppCompatActivity {
         mBtnStop.setOnClickListener(this::onClick);
 
         instance = AudioRecordManager.getInstance(getApplicationContext());
+        instance.checkUnUploadFiles();
     }
 
     private void onClick(View view) {

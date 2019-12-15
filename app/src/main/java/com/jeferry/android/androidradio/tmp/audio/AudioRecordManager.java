@@ -138,4 +138,39 @@ public class AudioRecordManager {
     public void unBind() {
         context.unbindService(connection);
     }
+
+    public void checkUnUploadFiles() {
+        new Thread(() -> {
+            try {
+                String path = context.getExternalCacheDir().getParentFile().getPath() + File.separator + "audio";
+                File file = new File(path);
+                if (file.exists() && file.isDirectory()) {
+                    File[] list = file.listFiles();
+                    deleteOrderAudio(list);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }).start();
+    }
+
+    private void deleteOrderAudio(File[] list) throws Exception {
+        if (list != null && list.length > 0) {
+            for (int i = 0; i < list.length; i++) {
+                File file = list[i];
+                KLog.d(TAG, "childDirPath: " + file.getPath());
+                if (file.exists() && file.isDirectory()) {
+                    File[] childList = file.listFiles();
+                    if (childList != null && childList.length > 0) {
+                        for (int i1 = 0; i1 < childList.length; i1++) {
+                            File audioFile = childList[i1];
+                            boolean delete = audioFile.delete();
+                            KLog.d(TAG, audioFile.getPath() + " ;delete : " + delete);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
